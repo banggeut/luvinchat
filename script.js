@@ -1,17 +1,17 @@
-// script.js 전문 (Buzzk 서버 연동용 최종 버전)
+// script.js 최종 수정 버전 (시청자 수 및 하트 로직 수정)
 document.addEventListener('DOMContentLoaded', () => {
     const chatMessagesContainer = document.getElementById('chatMessages');
-    // 하트 아이콘 요소(♡)를 가져옵니다.
+    // 빈 하트 아이콘(♡) 요소를 직접 가져옵니다.
     const emptyHeartIcon = document.querySelector('.bottom-right-icons .icon'); 
 
     const maxMessages = 5; 
     
-    // 시청자 프로필 이미지 목록 정의 (랜덤 사용을 위해 파일명을 입력해야 합니다.)
+    // 시청자 프로필 이미지 목록 정의 (가지고 계신 파일명과 동일해야 합니다.)
     const viewerProfileImages = [
         'default_profile.png', 
         'default_profile2.png', 
         'default_profile3.png', 
-        'default_profile4.png' // 가지고 계신 이미지 파일명으로 맞춰주세요.
+        'default_profile4.png' 
     ]; 
 
     // ★★★ 1. Buzzk 서버 웹 소켓 주소 (Vercel 배포 주소 사용) ★★★
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (data.type === 'viewer_count') {
                 const viewerCountElement = document.querySelector('.viewer-count');
                 if (viewerCountElement) {
-                    // 👁️ 아이콘을 유지하고 숫자만 실시간 데이터로 교체합니다.
+                    // ★★★ 수정된 로직: 👁️ 아이콘을 유지하고 숫자만 업데이트 ★★★
                     viewerCountElement.innerHTML = `👁️ ${data.payload.count.toLocaleString()}`;
                 }
             }
@@ -65,10 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         chatMessagesContainer.append(messageItem); 
 
-        // 하트 생성 함수 호출
-        createHeart(); 
+        createHeart(); // 하트 생성 함수 호출
 
-        // 최대 개수 초과 시, 맨 위 채팅을 페이드 아웃시키고 제거
+        // 최대 개수 초과 시, 맨 위 채팅 제거 로직 (유지)
         if (chatMessagesContainer.children.length > maxMessages) {
             const oldestMessage = chatMessagesContainer.firstChild;
             oldestMessage.classList.add('fade-out');
@@ -77,35 +76,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }, { once: true });
         }
         
-        // 스크롤 위치 조정
         chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; 
     }
 
     // 4. 하트 생성 로직 (createHeart)
     function createHeart() {
-        // 기존 하트 아이콘(♡)의 위치를 가져옵니다.
+        if (!emptyHeartIcon) return; // 빈 하트 아이콘이 없으면 종료
+
+        // 빈 하트 아이콘(♡)의 위치를 가져옵니다.
         const rect = emptyHeartIcon.getBoundingClientRect();
         
         const heartIcon = document.createElement('img');
-        heartIcon.src = 'heart_red.png'; // 이 파일이 업로드되어 있어야 합니다.
+        heartIcon.src = 'heart_red.png'; 
         heartIcon.classList.add('heart-icon');
 
+        // ★★★ 심장 애니메이션 위치 오류 수정 (body에 추가) ★★★
         document.body.appendChild(heartIcon); 
         
         // 하트 아이콘의 초기 위치를 빈 하트 아이콘(♡)의 위치 중앙에 맞춥니다.
         heartIcon.style.left = `${rect.left + rect.width / 2 - heartIcon.offsetWidth / 2}px`;
         heartIcon.style.bottom = `${window.innerHeight - rect.bottom}px`; 
         
-        // 애니메이션이 끝나면 요소 제거
         heartIcon.addEventListener('animationend', () => {
             heartIcon.remove();
         });
     }
 
-    // 초기 로드 시 위치 조정 (필요하다면)
-    function adjustHeartContainerPosition() {
-        // 이 함수는 현재 createHeart에서 직접 위치를 계산하므로 빈 상태를 유지합니다.
-    }
-    window.addEventListener('load', adjustHeartContainerPosition);
-    window.addEventListener('resize', adjustHeartContainerPosition);
 });
