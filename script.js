@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ]; 
 
     // ★★★ 1. Buzzk 서버 웹 소켓 주소 (Vercel 도메인 사용) ★★★
-    const YOUR_BACKEND_WEBSOCKET_URL = 'wss://buzzk.vercel.app/ws'; 
+    const YOUR_BACKEND_WEBSOCKET_URL = 'wss://buzzk.vercel.app/ws?id=0d7ac9ea88849fe93d8aae1c56586aaa';
 
     // 2. 웹 소켓 연결 설정
     let socket;
@@ -121,4 +121,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 참고: 현재 script.js 파일에는 샘플 채팅을 호출하는 setInterval이 정의되어 있습니다.
     // OBS에 최종 적용을 위해서는 GitHub에서 이 코드를 덮어써야 합니다.
+
 });
